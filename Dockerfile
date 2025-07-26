@@ -1,5 +1,5 @@
 # Base image
-FROM nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:12.9.1-cudnn-devel-ubuntu24.04
 
 # Use bash shell with pipefail option
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -12,21 +12,20 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_ALLOW_RUNASROOT=1
 
 # GitHub runner version argument
-ARG RUNNER_VERSION=2.305.0
+ARG RUNNER_VERSION=2.327.1
 
 # Update and upgrade the system packages (Worker Template)
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends \
-    curl libssl-dev libffi-dev openssh-server python3 python3-dev python3-pip && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    curl libssl-dev libffi-dev libicu-dev libunwind8 libcurl4 \
+    zlib1g libkrb5-3 liblttng-ust-dev libgssapi-krb5-2 \
+    openssh-server python3 python3-dev python3-pip sudo && \
+    apt-get clean && rm -rf /var/lib/apt/lists/*
+
 
 # Install Python dependencies (Worker Template)
 COPY builder/requirements.txt /requirements.txt
 RUN --mount=type=cache,target=/root/.cache/pip \
-    pip install --upgrade pip && \
-    pip install --upgrade -r /requirements.txt --no-cache-dir && \
+    pip install --upgrade -r /requirements.txt --no-cache-dir --break-system-packages && \
     rm /requirements.txt
 
 # cd into the user directory, download and unzip the github actions runner
