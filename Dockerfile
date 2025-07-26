@@ -1,5 +1,5 @@
 # Base image
-FROM nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu20.04
+FROM nvidia/cuda:12.9.1-cudnn-devel-ubuntu24.04
 
 # Use bash shell with pipefail option
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -12,7 +12,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ENV RUNNER_ALLOW_RUNASROOT=1
 
 # GitHub runner version argument
-ARG RUNNER_VERSION=2.305.0
+ARG RUNNER_VERSION=2.327.1
 
 # Update and upgrade the system packages (Worker Template)
 RUN apt-get update && \
